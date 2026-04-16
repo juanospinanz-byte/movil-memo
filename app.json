@@ -4,11 +4,11 @@
     "slug": "movil-1",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/dim.png",
+    "icon": "./assets/logogap.jpeg",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/dim.png",
+      "image": "./assets/logogap.jpeg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/dim.png",
+        "foregroundImage": "./assets/logogap.jpeg",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
