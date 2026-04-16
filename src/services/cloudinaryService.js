@@ -7,7 +7,7 @@ const CLOUDINARY_UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESE
 export const requestImagePermissions = async () => {
   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
-    Alert.alert('Lo siento, necesitamos permisos para acceder a tu galería de fotos.');
+    Alert.alert('Lo siento, necesitamos permisos para acceder a tu galería de fotos');
     return false;
   }
   return true;
@@ -52,10 +52,10 @@ export const uploadImageToCloudinary = async (imageUri) => {
     console.log('Image URI:', imageUri);
 
     const formData = new FormData();
-    
+
     // Manejar URI según plataforma
     const uri = Platform.OS === 'ios' ? imageUri.replace('file://', '') : imageUri;
-    
+
     formData.append('file', {
       uri: uri,
       type: 'image/jpeg',
@@ -64,7 +64,7 @@ export const uploadImageToCloudinary = async (imageUri) => {
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
     console.log('Enviando petición a Cloudinary...');
-    
+
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
@@ -87,7 +87,7 @@ export const uploadImageToCloudinary = async (imageUri) => {
 
     console.log('✅ Imagen subida exitosamente:', data.secure_url);
     return data.secure_url;
-    
+
   } catch (error) {
     console.error('Error uploading image to Cloudinary:', error);
     throw error;
