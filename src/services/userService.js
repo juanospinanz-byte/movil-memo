@@ -23,7 +23,7 @@ export const updateUserProfilePhoto = async (userId, photoURL) => {
       updatedAt: new Date().toISOString()
     }, { merge: true });
     
-    console.log('Foto de perfil actualizada exitosamente en el Auth y Firestore.');
+    console.log('Foto de perfil actualizada exitosamente en Auth y Firestore.');
     return true;
 
   } catch (error) {
