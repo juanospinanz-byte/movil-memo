@@ -1,7 +1,11 @@
+import { use } from "react";
 import colors from "../constants/colors";
 import { View, Text } from "react-native";
 
-const UserScreen = () => {
+const UserScreen = ({ navegation }) => {
+    const {user} = useAuth();
+    const [imageUri, setImageUri] = useState
+
     return (
         <View style={styles.container}>
             <Text>User Screen</Text>
