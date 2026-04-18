@@ -85,7 +85,7 @@ export const uploadImageToCloudinary = async (imageUri) => {
       throw new Error(data.error?.message || 'Error al subir la imagen');
     }
 
-    console.log('Imagen subida exitosamente:', data.secure_url);
+    console.log('Imagen se ha subido exitosamente:', data.secure_url);
     return data.secure_url;
 
   } catch (error) {

@@ -15,12 +15,16 @@ const UserScreen = ({ navegation }) => {
         if(user){
             setLoading(true);
             try {
-                
+                const firestorerUserData = await getUserData(user.uid);
+                setUserData(firestorerUserData);
+                setImageUri(firestorerUserData?.photoURL || user.photoURL  || defaultImage);
             } catch (error) {
                 
+            }finally{
+                setLoading(false)
             }
         }
-    })
+    },[user]);
 
     return (
         <View style={styles.container}>
