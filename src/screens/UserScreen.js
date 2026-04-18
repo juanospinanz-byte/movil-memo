@@ -1,10 +1,26 @@
-import { use } from "react";
+import { use, useCallback } from "react";
 import colors from "../constants/colors";
 import { View, Text } from "react-native";
 
 const UserScreen = ({ navegation }) => {
     const {user} = useAuth();
-    const [imageUri, setImageUri] = useState
+    const [imageUri, setImageUri] = useState(null);
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [showPreview, setShowPreview] = useState(false);
+    const defaultImage = '';
+
+    const fetchUserprofile = useCallback(async () => {
+        if(user){
+            setLoading(true);
+            try {
+                
+            } catch (error) {
+                
+            }
+        }
+    })
 
     return (
         <View style={styles.container}>
