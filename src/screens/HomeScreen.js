@@ -1,21 +1,20 @@
+import { StyleSheet, View } from "react-native";
 import colors from "../constants/colors";
-import { View, Text } from "react-native";
+import Calendario from "../components/Calendario";
 
 const HomeScreen = () => {
     return (
         <View style={styles.container}>
-            <Text>Home Screen</Text>
+            <Calendario />
         </View>
     );
 };
 
-const styles = {
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: colors.principal,
-    }
-};
+    },
+});
 
 export default HomeScreen;
