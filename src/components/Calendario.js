@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, ScrollView, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Alert, ScrollView, View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../constants/colors";
@@ -27,6 +27,7 @@ const Calendario = () => {
     const [diaSeleccionado, setDiaSeleccionado] = useState(hoy.getDate());
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [ordenes, setOrdenes] = useState([]);
+    const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
     const [ordenProgramada, setOrdenProgramada] = useState({
         fechaProgramada: '',
         servicio: '',
@@ -120,6 +121,10 @@ const Calendario = () => {
             tecnico: ordenProgramada.tecnico.trim(),
             horaInicio: ordenProgramada.horaInicio.trim(),
             horaFin: ordenProgramada.horaFin.trim(),
+            costo: ordenProgramada.costo.trim(),
+            descripcion: ordenProgramada.descripcion.trim(),
+            cliente: ordenProgramada.cliente.trim(),
+            fechaProgramada: ordenProgramada.fechaProgramada,
         };
 
         setOrdenes((ordenesAnteriores) => [...ordenesAnteriores, nuevaOrden]);
@@ -173,14 +178,27 @@ const Calendario = () => {
                 </Text>
                 <View style={styles.contenedorTiritas}>
                     {ordenesDelDia.slice(0, 2).map((orden) => (
-                        <View key={orden.id} style={styles.tiritaOrden}>
+                        <TouchableOpacity
+                            key={orden.id}
+                            style={styles.tiritaOrden}
+                            onPress={(e) => {
+                                e.stopPropagation && e.stopPropagation();
+                                setOrdenSeleccionada(orden);
+                            }}
+                            activeOpacity={0.7}
+                        >
                             <Text style={styles.textoTirita} numberOfLines={1}>
                                 {orden.horaInicio ? `${orden.horaInicio} ` : ''}{orden.servicio}
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                     {ordenesDelDia.length > 2 && (
-                        <Text style={styles.textoMasOrdenes}>+{ordenesDelDia.length - 2} más</Text>
+                        <TouchableOpacity onPress={() => {
+                            setDiaSeleccionado(dia);
+                            setOrdenSeleccionada(ordenesDelDia[0]);
+                        }}>
+                            <Text style={styles.textoMasOrdenes}>+{ordenesDelDia.length - 2} más</Text>
+                        </TouchableOpacity>
                     )}
                 </View>
             </TouchableOpacity>
@@ -242,7 +260,170 @@ const Calendario = () => {
                             </Text>
                         </View>
                     )}
+
+                    {/* Lista de órdenes del día seleccionado */}
+                    {diaSeleccionado && (() => {
+                        const ordenesDelDiaSeleccionado = ordenes.filter(
+                            (o) => o.dia === diaSeleccionado && o.mes === mesActual + 1 && o.anio === anioActual
+                        );
+                        if (ordenesDelDiaSeleccionado.length === 0) return null;
+                        return (
+                            <View style={styles.listaOrdenesDia}>
+                                <Text style={styles.tituloListaOrdenes}>
+                                    Órdenes del {diaSeleccionado} de {MESES[mesActual]}
+                                </Text>
+                                {ordenesDelDiaSeleccionado.map((orden) => (
+                                    <TouchableOpacity
+                                        key={orden.id}
+                                        style={styles.itemOrdenLista}
+                                        onPress={() => setOrdenSeleccionada(orden)}
+                                        activeOpacity={0.7}
+                                    >
+                                        <View style={styles.itemOrdenIcono}>
+                                            <Ionicons name="construct-outline" size={18} color="#10bfae" />
+                                        </View>
+                                        <View style={styles.itemOrdenInfo}>
+                                            <Text style={styles.itemOrdenServicio}>{orden.servicio}</Text>
+                                            <Text style={styles.itemOrdenSub}>
+                                                {orden.horaInicio && orden.horaFin
+                                                    ? `${orden.horaInicio} - ${orden.horaFin}`
+                                                    : orden.horaInicio || 'Sin hora'}
+                                                {orden.tecnico ? `  •  ${orden.tecnico}` : ''}
+                                            </Text>
+                                        </View>
+                                        <Ionicons name="chevron-forward" size={18} color="#b0b8c1" />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        );
+                    })()}
                 </ScrollView>
+
+                {/* Modal de detalle de orden */}
+                <Modal
+                    visible={ordenSeleccionada !== null}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setOrdenSeleccionada(null)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContenido}>
+                            <View style={styles.modalEncabezado}>
+                                <View style={styles.modalTituloContenedor}>
+                                    <View style={styles.modalIconoTitulo}>
+                                        <Ionicons name="document-text" size={20} color="#ffffff" />
+                                    </View>
+                                    <Text style={styles.modalTitulo}>Detalle de la orden</Text>
+                                </View>
+                                <TouchableOpacity
+                                    onPress={() => setOrdenSeleccionada(null)}
+                                    style={styles.modalBotonCerrar}
+                                >
+                                    <Ionicons name="close" size={22} color="#7a8694" />
+                                </TouchableOpacity>
+                            </View>
+
+                            {ordenSeleccionada && (
+                                <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+                                    {/* Servicio */}
+                                    <View style={styles.detalleSeccion}>
+                                        <View style={styles.detalleFila}>
+                                            <Ionicons name="construct-outline" size={18} color="#10bfae" />
+                                            <Text style={styles.detalleLabel}>Servicio</Text>
+                                        </View>
+                                        <Text style={styles.detalleValor}>{ordenSeleccionada.servicio}</Text>
+                                    </View>
+
+                                    {/* Fecha */}
+                                    <View style={styles.detalleSeccion}>
+                                        <View style={styles.detalleFila}>
+                                            <Ionicons name="calendar-outline" size={18} color="#10bfae" />
+                                            <Text style={styles.detalleLabel}>Fecha programada</Text>
+                                        </View>
+                                        <Text style={styles.detalleValor}>
+                                            {ordenSeleccionada.dia}/{ordenSeleccionada.mes}/{ordenSeleccionada.anio}
+                                        </Text>
+                                    </View>
+
+                                    {/* Horario */}
+                                    <View style={styles.detalleSeccionDoble}>
+                                        <View style={styles.detalleColumna}>
+                                            <View style={styles.detalleFila}>
+                                                <Ionicons name="time-outline" size={18} color="#10bfae" />
+                                                <Text style={styles.detalleLabel}>Hora inicio</Text>
+                                            </View>
+                                            <Text style={styles.detalleValor}>
+                                                {ordenSeleccionada.horaInicio || '—'}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.detalleColumna}>
+                                            <View style={styles.detalleFila}>
+                                                <Ionicons name="time-outline" size={18} color="#d15b75" />
+                                                <Text style={styles.detalleLabel}>Hora fin</Text>
+                                            </View>
+                                            <Text style={styles.detalleValor}>
+                                                {ordenSeleccionada.horaFin || '—'}
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    {/* Técnico */}
+                                    <View style={styles.detalleSeccion}>
+                                        <View style={styles.detalleFila}>
+                                            <Ionicons name="person-outline" size={18} color="#10bfae" />
+                                            <Text style={styles.detalleLabel}>Técnico</Text>
+                                        </View>
+                                        <Text style={styles.detalleValor}>{ordenSeleccionada.tecnico}</Text>
+                                    </View>
+
+                                    {/* Cliente */}
+                                    {ordenSeleccionada.cliente ? (
+                                        <View style={styles.detalleSeccion}>
+                                            <View style={styles.detalleFila}>
+                                                <Ionicons name="people-outline" size={18} color="#10bfae" />
+                                                <Text style={styles.detalleLabel}>Cliente</Text>
+                                            </View>
+                                            <Text style={styles.detalleValor}>{ordenSeleccionada.cliente}</Text>
+                                        </View>
+                                    ) : null}
+
+                                    {/* Costo */}
+                                    {ordenSeleccionada.costo ? (
+                                        <View style={styles.detalleSeccion}>
+                                            <View style={styles.detalleFila}>
+                                                <Ionicons name="cash-outline" size={18} color="#10bfae" />
+                                                <Text style={styles.detalleLabel}>Costo</Text>
+                                            </View>
+                                            <Text style={styles.detalleValorDestacado}>
+                                                ${ordenSeleccionada.costo}
+                                            </Text>
+                                        </View>
+                                    ) : null}
+
+                                    {/* Descripción */}
+                                    {ordenSeleccionada.descripcion ? (
+                                        <View style={styles.detalleSeccion}>
+                                            <View style={styles.detalleFila}>
+                                                <Ionicons name="reader-outline" size={18} color="#10bfae" />
+                                                <Text style={styles.detalleLabel}>Descripción</Text>
+                                            </View>
+                                            <Text style={styles.detalleValorDescripcion}>
+                                                {ordenSeleccionada.descripcion}
+                                            </Text>
+                                        </View>
+                                    ) : null}
+                                </ScrollView>
+                            )}
+
+                            <TouchableOpacity
+                                style={styles.modalBotonCerrarAbajo}
+                                onPress={() => setOrdenSeleccionada(null)}
+                            >
+                                <Text style={styles.modalBotonCerrarTexto}>Cerrar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
 
             </View>
         </LinearGradient>
@@ -398,6 +579,179 @@ const styles = StyleSheet.create({
         color: '#116c64',
         fontSize: 15,
         fontWeight: '600',
+    },
+    // Estilos para la lista de órdenes del día
+    listaOrdenesDia: {
+        marginTop: 14,
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e7ebf0',
+        padding: 14,
+    },
+    tituloListaOrdenes: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#2c3b4a',
+        marginBottom: 12,
+    },
+    itemOrdenLista: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f7f8fa',
+        borderRadius: 10,
+        padding: 12,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: '#eef1f5',
+    },
+    itemOrdenIcono: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        backgroundColor: '#e6f8f5',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    itemOrdenInfo: {
+        flex: 1,
+    },
+    itemOrdenServicio: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#2c3b4a',
+    },
+    itemOrdenSub: {
+        fontSize: 12,
+        color: '#7a8694',
+        marginTop: 2,
+    },
+    // Estilos para el modal de detalle
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContenido: {
+        width: '100%',
+        maxWidth: 480,
+        maxHeight: '85%',
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        overflow: 'hidden',
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+    },
+    modalEncabezado: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 18,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eef1f5',
+        backgroundColor: '#fafbfc',
+    },
+    modalTituloContenedor: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
+    modalIconoTitulo: {
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        backgroundColor: '#10bfae',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalTitulo: {
+        fontSize: 17,
+        fontWeight: '700',
+        color: '#2c3b4a',
+    },
+    modalBotonCerrar: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#f0f2f6',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalBody: {
+        paddingHorizontal: 18,
+        paddingTop: 14,
+        paddingBottom: 8,
+    },
+    detalleSeccion: {
+        marginBottom: 16,
+        backgroundColor: '#f7f8fa',
+        borderRadius: 10,
+        padding: 14,
+        borderWidth: 1,
+        borderColor: '#eef1f5',
+    },
+    detalleSeccionDoble: {
+        flexDirection: 'row',
+        gap: 10,
+        marginBottom: 16,
+    },
+    detalleColumna: {
+        flex: 1,
+        backgroundColor: '#f7f8fa',
+        borderRadius: 10,
+        padding: 14,
+        borderWidth: 1,
+        borderColor: '#eef1f5',
+    },
+    detalleFila: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 6,
+    },
+    detalleLabel: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#7a8694',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    detalleValor: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#2c3b4a',
+    },
+    detalleValorDestacado: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#0f766e',
+    },
+    detalleValorDescripcion: {
+        fontSize: 14,
+        fontWeight: '400',
+        color: '#4a5568',
+        lineHeight: 20,
+    },
+    modalBotonCerrarAbajo: {
+        marginHorizontal: 18,
+        marginBottom: 16,
+        marginTop: 8,
+        backgroundColor: '#10bfae',
+        borderRadius: 10,
+        paddingVertical: 13,
+        alignItems: 'center',
+    },
+    modalBotonCerrarTexto: {
+        color: '#ffffff',
+        fontSize: 15,
+        fontWeight: '700',
     },
 });
 
