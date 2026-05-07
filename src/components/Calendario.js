@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Alert, ScrollView, View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../constants/colors";
 import Formulario from "./Formulario";
+import sqliteService from "../services/sqliteService";
+import { auth } from "../services/firebaseService";
 
 const DIAS_SEMANA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -38,6 +40,17 @@ const Calendario = () => {
         descripcion: '',
         cliente: '',
     });
+
+    useEffect(() => {
+        const cargarOrdenes = () => {
+            const user = auth.currentUser;
+            if (user) {
+                const ordenesCargadas = sqliteService.obtenerOrdenesPorUsuario(user.uid);
+                setOrdenes(ordenesCargadas || []);
+            }
+        };
+        cargarOrdenes();
+    }, []);
 
     const totalDias = obtenerDiasDelMes(anioActual, mesActual);
     const primerDia = obtenerPrimerDia(anioActual, mesActual);
@@ -113,7 +126,6 @@ const Calendario = () => {
         }
 
         const nuevaOrden = {
-            id: `${Date.now()}-${Math.random()}`,
             dia,
             mes,
             anio,
@@ -127,7 +139,19 @@ const Calendario = () => {
             fechaProgramada: ordenProgramada.fechaProgramada,
         };
 
-        setOrdenes((ordenesAnteriores) => [...ordenesAnteriores, nuevaOrden]);
+        const user = auth.currentUser;
+        if (user) {
+            const ordenGuardada = sqliteService.guardarOrden(nuevaOrden, user.uid);
+            if (ordenGuardada) {
+                setOrdenes((ordenesAnteriores) => [...ordenesAnteriores, ordenGuardada]);
+            } else {
+                nuevaOrden.id = `${Date.now()}-${Math.random()}`;
+                setOrdenes((ordenesAnteriores) => [...ordenesAnteriores, nuevaOrden]);
+            }
+        } else {
+            nuevaOrden.id = `${Date.now()}-${Math.random()}`;
+            setOrdenes((ordenesAnteriores) => [...ordenesAnteriores, nuevaOrden]);
+        }
         setOrdenProgramada((estadoAnterior) => ({
             ...estadoAnterior,
             servicio: '',

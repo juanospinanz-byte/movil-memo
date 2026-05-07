@@ -1,113 +1,149 @@
-import { use, useCallback } from "react";
-import colors from "../constants/colors";
-import { View, Text, Alert, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, Alert, Image, TouchableOpacity, ActivityIndicator, StyleSheet, Dimensions } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { pickImage, uploadImageToCloudinary } from "../services/cloudinaryService";
 import { ScrollView } from "react-native-gesture-handler";
+import { Ionicons } from "@expo/vector-icons";
+import { updateProfile } from "firebase/auth";
+import { auth } from "../services/firebaseService";
+import { pickImage, uploadImageToCloudinary } from "../services/cloudinaryService";
+import { LinearGradient } from "expo-linear-gradient";
+import colors from "../constants/colors";
+
+const { width } = Dimensions.get("window");
 
 const UserScreen = ({ navigation }) => {
-    const {user} = useAuth();
-    const [imageUri, setImageUri] = useState(null);
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [showPreview, setShowPreview] = useState(false);
-    const defaultImage = ''; // URL de la imagen por defecto
-
-    const fetchUserProfile = useCallback(async () => {
-        if(user){
-            setLoading(true);
-            try {
-                const firestoreUserData = await getUserData(user.uid);
-                setUserData(firestoreUserData);
-                setImageUri(firestoreUserData?.photoURL || user.photoURL || defaultImage);
-            } catch (error) {
-                console.error("Error al obteer los datos del perfil: ", error);
-                setImageUri(user.photoURL || defaultImage);
-            }finally{
-                setLoading(false);
-            }
-        }
-    },[user]);
+    const user = auth.currentUser;
+    const defaultImage = 'https://ui-avatars.com/api/?name=' + (user?.displayName || 'Usuario') + '&background=1998CC&color=fff&size=256';
+    const [imageUri, setImageUri] = useState(user?.photoURL || defaultImage);
+    const [uploading, setUploading] = useState(false);
 
     useFocusEffect(
-        useCallback(()=>{
-            fetchUserProfile();
-        },[fetchUserProfile])
+        useCallback(() => {
+            if (user) {
+                setImageUri(user.photoURL || defaultImage);
+            }
+        }, [user])
     );
 
-    const handleImageSelection = async() =>{
+    const handleImageSelection = async () => {
         try {
             const imageAsset = await pickImage();
             if (imageAsset) {
-                setSelectedImage(imageAsset);
-                setShowPreview(true);
+                setUploading(true);
+                const imageUrl = await uploadImageToCloudinary(imageAsset.uri);
+                if (user && imageUrl) {
+                    await updateProfile(user, { photoURL: imageUrl });
+                    setImageUri(imageUrl);
+                    Alert.alert('Éxito 🎉', 'Tu foto de perfil se actualizó correctamente.');
+                }
             }
         } catch (error) {
-            console.error("Error al seleccionar la imagen: ", error);
-            Alert.alert('Error 😵‍💫', 'No se pudo seleccionar la imagen')
-        }
-    };
-
-    const handleCancelSelection=()=>{
-        setSelectedImage(null);
-        setShowPreview(false);
-    }
-
-    const handleConfirmUpload = async ()=>{
-        if(!selectedImage) return;
-        try {
-            setLoading(true);
-            setShowPreview(false);
-
-            const imageUrl = await uploadImageToCloudinary(selectedImage.uri);
-            await updateUserProfilePhoto(user.uid, imageUrl);
-
-            setImageUri(imageUrl);
-
-            setSelectedImage(null);
-            Alert.alert('Éxito', 'Imagen de perfil actualizada satisfactoriamente!');
-            
-        } catch (error) {
-            console.error('Error al caargar la imagen: ',error)
-            Alert.alert('Error 😵‍💫', 'Imagen de perfil no se pudo actualizar');            
+            console.error("Error al actualizar la imagen: ", error);
+            Alert.alert('Error 😵‍💫', 'Hubo un problema al subir tu foto.');
         } finally {
-            setLoading(false);
+            setUploading(false);
         }
-
     };
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                <Text>User Screen</Text>
-                <View>
-                    <Image source={{uri:imageUri}} resizeMode="cover"/>
-                    <TouchableOpacity onPress={handleImageSelection} disabled={loading} >
-                        {loading ? (
-                            <ActivityIndicator color="" size="small" />
-                        ):(
-                            <Text>Cambiar Foto</Text>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <LinearGradient 
+                colors={[colors.principal, colors.variante2]} 
+                style={styles.headerGradient}
+            >
+                <Text style={styles.headerTitle}>Mi Perfil</Text>
+            </LinearGradient>
+
+            <View style={styles.profileSection}>
+                <View style={styles.avatarContainer}>
+                    <Image source={{ uri: imageUri }} style={styles.avatar} />
+                    <TouchableOpacity style={styles.editBadge} onPress={handleImageSelection} disabled={uploading}>
+                        {uploading ? (
+                            <ActivityIndicator size="small" color={colors.iluminado} />
+                        ) : (
+                            <Ionicons name="camera" size={20} color={colors.iluminado} />
                         )}
                     </TouchableOpacity>
                 </View>
-                <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{user?.displayName || 'Usuario'}</Text>
-                    <Text style={styles.userEmail}>{user?.email}</Text>
-                </View>
+
+                <Text style={styles.userName}>{user?.displayName || 'Usuario MovilMemo'}</Text>
+                <Text style={styles.userEmail}>{user?.email}</Text>
             </View>
         </ScrollView>
-        
     );
 };
 
-const styles = {
+const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: colors.fondloClaro,
+    },
+    headerGradient: {
+        height: 180,
+        width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors.principal,
-    }
-};
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+    },
+    headerTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: colors.iluminado,
+        marginTop: -30,
+    },
+    profileSection: {
+        alignItems: 'center',
+        marginTop: -60,
+        paddingHorizontal: 20,
+    },
+    avatarContainer: {
+        position: 'relative',
+        marginBottom: 16,
+        shadowColor: colors.oscuro,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        elevation: 8,
+    },
+    avatar: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 4,
+        borderColor: colors.iluminado,
+        backgroundColor: colors.variante1,
+    },
+    editBadge: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: colors.variante1,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 3,
+        borderColor: colors.iluminado,
+        shadowColor: colors.oscuro,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
+    },
+    userName: {
+        fontSize: 24,
+        fontWeight: '800',
+        color: colors.principal,
+        marginBottom: 4,
+    },
+    userEmail: {
+        fontSize: 15,
+        color: colors.variante2,
+        marginBottom: 24,
+        fontWeight: '500',
+    },
+});
 
 export default UserScreen;

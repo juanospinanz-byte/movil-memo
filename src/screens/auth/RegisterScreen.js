@@ -42,12 +42,7 @@ const RegisterScreen = () => {
                 displayName: name
             });
             
-            Alert.alert('Éxito', 'Usuario registrado correctamente', [
-                { text: 'OK', onPress: () => navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
-                }) }
-            ]);
+            Alert.alert('Éxito', 'Usuario registrado correctamente');
         } catch (error) {
             console.error('=== ERROR DE REGISTRO ===');
             console.error('Código de error:', error.code);

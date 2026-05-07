@@ -13,10 +13,7 @@ const SettingsScreen = () => {
         try {
             setLoading(true);
             await signOut(auth);
-            Alert.alert('Sesión cerrada 😊', 'Has cerrado tu sesión correctamente',[
-                {text: 'OK', onPress:()=> navigation
-                    .reset({index: 0, routes: [{name:'Login'}]})}
-            ])
+            Alert.alert('Sesión cerrada 😊', 'Has cerrado tu sesión correctamente');
         } catch (error) {
             console.log('Error al cerrar sesión:',error)
             Alert.alert('Error 😵‍💫','No se pudo cerrar la sesión')
@@ -27,6 +24,7 @@ const SettingsScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Ajustes</Text>
+
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} disabled={loading}>
                 
                     <Text style={styles.logoutText}> Cerrar sesión ❌</Text>
@@ -46,22 +44,22 @@ const styles = {
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.principal,
-    marginBottom: 10,
+    color: colors.iluminado,
+    marginBottom: 24,
   },
   subtitle: {
     fontSize: 16,
-    color: colors.subtle,
+    color: colors.suave,
   },
   logoutButton: {
-    marginTop: 24,
-    backgroundColor: colors.error,
+    marginTop: 32,
+    backgroundColor: colors.alerta,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
   logoutText: {
-    color: colors.luminous,
+    color: colors.iluminado,
     fontSize: 16,
     fontWeight: '600',
   },

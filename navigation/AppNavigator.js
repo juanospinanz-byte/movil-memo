@@ -14,6 +14,7 @@ import LoginScreen from '../src/screens/auth/LoginScreen';
 import HomeScreen from '../src/screens/HomeScreen';
 import UserScreen from '../src/screens/UserScreen';
 import SettingsScreen from '../src/screens/SettingsScreen';
+import PlagasScreen from '../src/screens/PlagasScreen';
 
 const AuthContext = createContext({});
 
@@ -35,6 +36,8 @@ const TabNavigator = () => {
 
                     if (route.name === "Home") {
                         iconName = focused ? 'home' : 'home-outline';
+                    } else if(route.name === "Plagas"){
+                        iconName = focused ? 'bug' : 'bug-outline';
                     } else if(route.name === "Settings"){
                         iconName = focused ? 'settings' : 'settings-outline';
                     } else if(route.name === "User"){
@@ -64,6 +67,7 @@ const TabNavigator = () => {
             })}
         >
             <Tab.Screen name="Home" component={HomeScreen} options={{tabBarLabel:'Home'}}/>
+            <Tab.Screen name="Plagas" component={PlagasScreen} options={{tabBarLabel:'Plagas'}}/>
             <Tab.Screen name="User" component={UserScreen} options={{tabBarLabel:'Usuario'}}/>
             <Tab.Screen name="Settings" component={SettingsScreen} options={{tabBarLabel:'Ajustes'}}/>
         </Tab.Navigator>
