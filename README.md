@@ -46,4 +46,7 @@ en el apartado de ajustes esta el boton de cerrar sesion en el cual el archivo q
 al cerrar sesion la aplicacion la lleva al login para que el usuario pueda iniciar sesion con la cuenta que se creo
 
 -----
-do principal de la aplicacion
+
+## diagrama 
+
+![alt text](diagrama-aplicacion.png)
