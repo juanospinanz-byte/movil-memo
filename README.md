@@ -17,8 +17,8 @@ al registrarse se lleva a la pagina en el apartado principal en el cual es home,
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/682d869b-6337-4386-81f8-8a4e27ac2a74" />
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/9785577c-8233-4d03-ab11-2ade5c632014" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/682d869b-6337-4386-81f8-8a4e27ac2a74" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/9785577c-8233-4d03-ab11-2ade5c632014" />
 al agregar una orden se guarda la orden en el sqlite
 
 -----
