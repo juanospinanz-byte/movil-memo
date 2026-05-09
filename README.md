@@ -3,7 +3,7 @@
 es una aplicación móvil integral diseñada para empresas y profesionales del control de plagas. Soluciona la dispersión de la información al centralizar en un solo lugar la agenda de servicios de fumigación y una completa base de conocimiento sobre plagas. Nuestro valor añadido es doble: para el técnico, una herramienta de gestión diaria que evita errores de calendario; para la empresa y sus clientes, una fuente de información educativa que justifica los tratamientos, fideliza y reduce las reincidencias.
 
 # Capturas
-<img width="738" height="500" alt="imagen" src="https://github.com/user-attachments/assets/a479aa31-d0bf-42aa-a7ad-5bbc2dd70242" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/a479aa31-d0bf-42aa-a7ad-5bbc2dd70242" />
 <img width="275" height="83" alt="imagen" src="https://github.com/user-attachments/assets/852becbd-3d9e-446c-a6cd-3ed7f91e6dca" />
 
 en esta imagen es el registro de la aplicacion en el cual pide el nombre, correo, contraseña y confirmar contraseña, esa funcion esta en la carpeta de auth y ahi esta el archivo js del registro
