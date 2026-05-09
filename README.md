@@ -23,30 +23,30 @@ al agregar una orden se guarda la orden en el sqlite
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/01e944f4-8591-41da-97db-5a75a1e99dc8" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/01e944f4-8591-41da-97db-5a75a1e99dc8" />
 se puede mirar la orden que se guardo
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/ba3854b9-4249-451b-a6fa-1b37c79bf260" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/ba3854b9-4249-451b-a6fa-1b37c79bf260" />
 esta la funcion de registrar los tipos de plagas que existen
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/c58c510d-c3a7-4ae3-967f-86e8d084a4a6" />
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/7e6287a1-ecf0-4c57-9959-d10196e2d6aa" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/c58c510d-c3a7-4ae3-967f-86e8d084a4a6" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/7e6287a1-ecf0-4c57-9959-d10196e2d6aa" />
 esta la funcion de agregar foto de perfil
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/559adcae-aa1e-463d-acab-1312eccfacef" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/559adcae-aa1e-463d-acab-1312eccfacef" />
 <img width="278" height="171" alt="imagen" src="https://github.com/user-attachments/assets/6ea38cdf-58c1-4d4b-ace2-d0c300f6d152" />
 
 en el apartado de ajustes esta el boton de cerrar sesion en el cual el archivo que hae que cumpla la funcion para que el usuario pueda cerrar la sesion en la aplicacion esta en la carpeta de screen
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/1833d9d0-3753-41fd-bfa0-56c70b635bb1" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/1833d9d0-3753-41fd-bfa0-56c70b635bb1" />
 al cerrar sesion la aplicacion la lleva al login para que el usuario pueda iniciar sesion con la cuenta que se creo
 
 -----
