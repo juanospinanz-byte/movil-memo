@@ -10,7 +10,7 @@ en esta imagen es el registro de la aplicacion en el cual pide el nombre, correo
 
 -----
 
-<img width="738" height="1600" alt="imagen" src="https://github.com/user-attachments/assets/044bf5a8-89cd-46d4-b66f-49511f84d51c" />
+<img width="500" height="500" alt="imagen" src="https://github.com/user-attachments/assets/044bf5a8-89cd-46d4-b66f-49511f84d51c" />
 <img width="277" height="118" alt="imagen" src="https://github.com/user-attachments/assets/a2b1b847-1693-4d81-a6d5-a3c2d2301f1f" />
 
 al registrarse se lleva a la pagina en el apartado principal en el cual es home, el archivo en el cual esta la info que es home esta en la carpeta de screens
