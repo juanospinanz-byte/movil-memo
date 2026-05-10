@@ -1,10 +1,14 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../constants/ThemeContext";
 
 export default function Formulario({
     valores,
     onChange,
     onSubmit,
 }) {
+    const { theme, isDarkMode } = useTheme();
+    const styles = createStyles(theme, isDarkMode);
+
     return (
         <View style={styles.contenedor}>
             <Text style={styles.titulo}>Programar orden</Text>
@@ -13,6 +17,7 @@ export default function Formulario({
             <TextInput
                 style={styles.input}
                 placeholder="DD/MM/AAAA"
+                placeholderTextColor={theme.textoSubtitulo}
                 value={valores.fechaProgramada}
                 onChangeText={(texto) => onChange("fechaProgramada", texto)}
             />
@@ -21,6 +26,7 @@ export default function Formulario({
             <TextInput
                 style={styles.input}
                 placeholder="Servicio a realizar"
+                placeholderTextColor={theme.textoSubtitulo}
                 value={valores.servicio}
                 onChangeText={(texto) => onChange("servicio", texto)}
             />
@@ -29,6 +35,7 @@ export default function Formulario({
             <TextInput
                 style={styles.input}
                 placeholder="Nombre del técnico"
+                placeholderTextColor={theme.textoSubtitulo}
                 value={valores.tecnico}
                 onChangeText={(texto) => onChange("tecnico", texto)}
             />
@@ -37,6 +44,7 @@ export default function Formulario({
             <TextInput
                 style={styles.input}
                 placeholder="Costo estimado"
+                placeholderTextColor={theme.textoSubtitulo}
                 value={valores.costo}
                 keyboardType="numeric"
                 onChangeText={(texto) => onChange("costo", texto)}
@@ -48,6 +56,7 @@ export default function Formulario({
                     <TextInput
                         style={styles.input}
                         placeholder="08:00"
+                        placeholderTextColor={theme.textoSubtitulo}
                         value={valores.horaInicio}
                         onChangeText={(texto) => onChange("horaInicio", texto)}
                     />
@@ -57,6 +66,7 @@ export default function Formulario({
                     <TextInput
                         style={styles.input}
                         placeholder="10:00"
+                        placeholderTextColor={theme.textoSubtitulo}
                         value={valores.horaFin}
                         onChangeText={(texto) => onChange("horaFin", texto)}
                     />
@@ -67,6 +77,7 @@ export default function Formulario({
             <TextInput
                 style={[styles.input, styles.inputMultilinea]}
                 placeholder="Detalles de la orden"
+                placeholderTextColor={theme.textoSubtitulo}
                 value={valores.descripcion}
                 multiline
                 numberOfLines={4}
@@ -77,6 +88,7 @@ export default function Formulario({
             <TextInput
                 style={styles.input}
                 placeholder="Nombre del cliente"
+                placeholderTextColor={theme.textoSubtitulo}
                 value={valores.cliente}
                 onChangeText={(texto) => onChange("cliente", texto)}
             />
@@ -88,37 +100,37 @@ export default function Formulario({
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme, isDarkMode) => StyleSheet.create({
     contenedor: {
         marginBottom: 16,
         padding: 14,
         borderRadius: 10,
-        backgroundColor: "#ffffff",
+        backgroundColor: theme.fondoTarjeta,
         borderWidth: 1,
-        borderColor: "#e7ebf0",
+        borderColor: theme.fondoBorde,
     },
     titulo: {
         fontSize: 18,
         fontWeight: "700",
-        color: "#2c3b4a",
+        color: theme.textoTitulo,
         marginBottom: 10,
     },
     label: {
         fontSize: 13,
-        color: "#5f6b78",
+        color: theme.textoSubtitulo,
         marginBottom: 6,
         marginTop: 6,
         fontWeight: "600",
     },
     input: {
         borderWidth: 1,
-        borderColor: "#d9e0e8",
+        borderColor: theme.fondoBorde,
         borderRadius: 8,
-        backgroundColor: "#f9fbfd",
+        backgroundColor: theme.fondoInput,
         paddingHorizontal: 10,
         paddingVertical: 9,
         fontSize: 14,
-        color: "#2c3b4a",
+        color: theme.textoTitulo,
     },
     filaHoras: {
         flexDirection: "row",

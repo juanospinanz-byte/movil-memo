@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { onAuthStateChanged } from "firebase/auth";
-
+import { useTheme } from '../src/constants/ThemeContext';
 import { auth } from '../src/services/firebaseService';
 
 import SplashScreen from '../src/screens/SplashScreen';
@@ -26,6 +26,7 @@ const ProfileStack = createNativeStackNavigator();
 
 const TabNavigator = () => {
     const { user } = useAuth();
+    const { theme, isDarkMode } = useTheme();
 
     return(
         <Tab.Navigator 
@@ -50,19 +51,26 @@ const TabNavigator = () => {
                                         height: size,
                                         borderRadius: size / 2,
                                         borderWidth: focused ? 2 : 0,
-                                        borderColor: focused ? '#0077B6' : 'transparent',
+                                        borderColor: focused ? theme.acento : 'transparent',
                                     }}
                                 />
                             );
                         }
-                        // Si no tiene foto, mostrar el icono por defecto
                         return <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />;
                     } 
                     
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
-                tabBarActiveTintColor: '#0077B6',
-                tabBarInactiveTintColor: 'gray',
+                tabBarActiveTintColor: theme.acento,
+                tabBarInactiveTintColor: isDarkMode ? '#6b7280' : 'gray',
+                tabBarStyle: {
+                    backgroundColor: theme.fondoTarjeta,
+                    borderTopColor: theme.fondoBorde,
+                    borderTopWidth: 1,
+                },
+                tabBarLabelStyle: {
+                    color: isDarkMode ? theme.textoSubtitulo : undefined,
+                },
                 headerShown: false,
             })}
         >
@@ -72,7 +80,7 @@ const TabNavigator = () => {
             <Tab.Screen name="Settings" component={SettingsScreen} options={{tabBarLabel:'Ajustes'}}/>
         </Tab.Navigator>
     )
-}   
+}
 
 const AppNavigator = () => {
     const [user, setUser] = useState(null);

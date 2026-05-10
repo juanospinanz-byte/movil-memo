@@ -1,10 +1,12 @@
 import { StyleSheet, View } from "react-native";
-import colors from "../constants/colors";
 import Calendario from "../components/Calendario";
+import { useTheme } from "../constants/ThemeContext";
 
 const HomeScreen = () => {
+    const { theme } = useTheme();
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.fondoApp }]}>
             <Calendario />
         </View>
     );
@@ -13,7 +15,6 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.principal,
     },
 });
 

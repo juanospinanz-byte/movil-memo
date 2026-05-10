@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Alert, ScrollView, View, Text, TouchableOpacity, StyleSheet, Modal } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../constants/colors";
 import Formulario from "./Formulario";
 import sqliteService from "../services/sqliteService";
 import { auth } from "../services/firebaseService";
+import { useTheme } from "../constants/ThemeContext";
 
 const DIAS_SEMANA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -24,6 +24,7 @@ const obtenerPrimerDia = (anio, mes) => {
 
 const Calendario = () => {
     const hoy = new Date();
+    const { theme, isDarkMode } = useTheme();
     const [mesActual, setMesActual] = useState(hoy.getMonth());
     const [anioActual, setAnioActual] = useState(hoy.getFullYear());
     const [diaSeleccionado, setDiaSeleccionado] = useState(hoy.getDate());
@@ -230,56 +231,57 @@ const Calendario = () => {
     }
 
     return (
-        <LinearGradient colors={colors.gradientePrimario} style={styles.container}>
-            <View style={styles.tarjeta}>
-                <TouchableOpacity style={styles.botonProgramar} onPress={alternarFormulario}>
-                    <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
-                    <Text style={styles.textoBotonProgramar}>Programar orden</Text>
-                </TouchableOpacity>
-
-                {mostrarFormulario && (
-                    <Formulario
-                        valores={ordenProgramada}
-                        onChange={actualizarCampo}
-                        onSubmit={guardarOrden}
-                    />
-                )}
-
+        <LinearGradient colors={theme.gradientePrimario} style={styles.container}>
+            <View style={[styles.tarjeta, { backgroundColor: theme.fondoTarjeta }]}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {/* Encabezado con mes y año */}
                     <View style={styles.encabezado}>
                         <TouchableOpacity onPress={irMesAnterior} style={styles.botonNavegacion}>
-                            <Ionicons name="chevron-back" size={22} color={colors.iluminado} />
+                            <Ionicons name="chevron-back" size={22} color="#ffffff" />
                         </TouchableOpacity>
 
-                        <Text style={styles.tituloMes}>
+                        <Text style={[styles.tituloMes, { color: theme.textoSubtitulo }]}>
                             {MESES[mesActual]} {anioActual}
                         </Text>
 
                         <TouchableOpacity onPress={irMesSiguiente} style={styles.botonNavegacion}>
-                            <Ionicons name="chevron-forward" size={22} color={colors.iluminado} />
+                            <Ionicons name="chevron-forward" size={22} color="#ffffff" />
                         </TouchableOpacity>
                     </View>
 
                     {/* Días de la semana */}
-                    <View style={styles.fila}>
+                    <View style={[styles.fila, { backgroundColor: isDarkMode ? '#1c2330' : '#eceff2' }]}>
                         {DIAS_SEMANA.map((dia) => (
                             <View key={dia} style={styles.celda}>
-                                <Text style={styles.textoDiaSemana}>{dia}</Text>
+                                <Text style={[styles.textoDiaSemana, { color: theme.textoSubtitulo }]}>{dia}</Text>
                             </View>
                         ))}
                     </View>
 
                     {/* Grilla de días */}
-                    <View style={styles.grilla}>
+                    <View style={[styles.grilla, { backgroundColor: theme.fondoTarjeta, borderColor: theme.fondoBorde }]}>
                         {celdas}
                     </View>
 
+                    {/* Botón programar orden */}
+                    <TouchableOpacity style={styles.botonProgramar} onPress={alternarFormulario}>
+                        <Ionicons name="add-circle-outline" size={18} color="#ffffff" />
+                        <Text style={styles.textoBotonProgramar}>Programar orden</Text>
+                    </TouchableOpacity>
+
+                    {mostrarFormulario && (
+                        <Formulario
+                            valores={ordenProgramada}
+                            onChange={actualizarCampo}
+                            onSubmit={guardarOrden}
+                        />
+                    )}
+
                     {/* Indicador del día seleccionado */}
                     {diaSeleccionado && (
-                        <View style={styles.infoSeleccionado}>
-                            <Ionicons name="calendar-outline" size={16} color={colors.variante1} />
-                            <Text style={styles.textoInfoSeleccionado}>
+                        <View style={[styles.infoSeleccionado, { backgroundColor: isDarkMode ? '#0d2f2a' : '#e8f7f5' }]}>
+                            <Ionicons name="calendar-outline" size={16} color={theme.acento} />
+                            <Text style={[styles.textoInfoSeleccionado, { color: isDarkMode ? '#4dfff3' : '#116c64' }]}>
                                 {diaSeleccionado} de {MESES[mesActual]}, {anioActual}
                             </Text>
                         </View>
@@ -292,23 +294,23 @@ const Calendario = () => {
                         );
                         if (ordenesDelDiaSeleccionado.length === 0) return null;
                         return (
-                            <View style={styles.listaOrdenesDia}>
-                                <Text style={styles.tituloListaOrdenes}>
+                            <View style={[styles.listaOrdenesDia, { backgroundColor: theme.fondoTarjeta, borderColor: theme.fondoBorde }]}>
+                                <Text style={[styles.tituloListaOrdenes, { color: theme.textoTitulo }]}>
                                     Órdenes del {diaSeleccionado} de {MESES[mesActual]}
                                 </Text>
                                 {ordenesDelDiaSeleccionado.map((orden) => (
                                     <TouchableOpacity
                                         key={orden.id}
-                                        style={styles.itemOrdenLista}
+                                        style={[styles.itemOrdenLista, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}
                                         onPress={() => setOrdenSeleccionada(orden)}
                                         activeOpacity={0.7}
                                     >
-                                        <View style={styles.itemOrdenIcono}>
+                                        <View style={[styles.itemOrdenIcono, { backgroundColor: isDarkMode ? '#0d2f2a' : '#e6f8f5' }]}>
                                             <Ionicons name="construct-outline" size={18} color="#10bfae" />
                                         </View>
                                         <View style={styles.itemOrdenInfo}>
-                                            <Text style={styles.itemOrdenServicio}>{orden.servicio}</Text>
-                                            <Text style={styles.itemOrdenSub}>
+                                            <Text style={[styles.itemOrdenServicio, { color: theme.textoTitulo }]}>{orden.servicio}</Text>
+                                            <Text style={[styles.itemOrdenSub, { color: theme.textoSubtitulo }]}>
                                                 {orden.horaInicio && orden.horaFin
                                                     ? `${orden.horaInicio} - ${orden.horaFin}`
                                                     : orden.horaInicio || 'Sin hora'}
@@ -331,17 +333,17 @@ const Calendario = () => {
                     onRequestClose={() => setOrdenSeleccionada(null)}
                 >
                     <View style={styles.modalOverlay}>
-                        <View style={styles.modalContenido}>
-                            <View style={styles.modalEncabezado}>
+                        <View style={[styles.modalContenido, { backgroundColor: theme.fondoTarjeta }]}>
+                            <View style={[styles.modalEncabezado, { backgroundColor: theme.fondoSecundario, borderBottomColor: theme.fondoBorde }]}>
                                 <View style={styles.modalTituloContenedor}>
                                     <View style={styles.modalIconoTitulo}>
                                         <Ionicons name="document-text" size={20} color="#ffffff" />
                                     </View>
-                                    <Text style={styles.modalTitulo}>Detalle de la orden</Text>
+                                    <Text style={[styles.modalTitulo, { color: theme.textoTitulo }]}>Detalle de la orden</Text>
                                 </View>
                                 <TouchableOpacity
                                     onPress={() => setOrdenSeleccionada(null)}
-                                    style={styles.modalBotonCerrar}
+                                    style={[styles.modalBotonCerrar, { backgroundColor: isDarkMode ? '#2a3340' : '#f0f2f6' }]}
                                 >
                                     <Ionicons name="close" size={22} color="#7a8694" />
                                 </TouchableOpacity>
@@ -350,73 +352,73 @@ const Calendario = () => {
                             {ordenSeleccionada && (
                                 <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
                                     {/* Servicio */}
-                                    <View style={styles.detalleSeccion}>
+                                    <View style={[styles.detalleSeccion, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                         <View style={styles.detalleFila}>
                                             <Ionicons name="construct-outline" size={18} color="#10bfae" />
-                                            <Text style={styles.detalleLabel}>Servicio</Text>
+                                            <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Servicio</Text>
                                         </View>
-                                        <Text style={styles.detalleValor}>{ordenSeleccionada.servicio}</Text>
+                                        <Text style={[styles.detalleValor, { color: theme.textoTitulo }]}>{ordenSeleccionada.servicio}</Text>
                                     </View>
 
                                     {/* Fecha */}
-                                    <View style={styles.detalleSeccion}>
+                                    <View style={[styles.detalleSeccion, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                         <View style={styles.detalleFila}>
                                             <Ionicons name="calendar-outline" size={18} color="#10bfae" />
-                                            <Text style={styles.detalleLabel}>Fecha programada</Text>
+                                            <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Fecha programada</Text>
                                         </View>
-                                        <Text style={styles.detalleValor}>
+                                        <Text style={[styles.detalleValor, { color: theme.textoTitulo }]}>
                                             {ordenSeleccionada.dia}/{ordenSeleccionada.mes}/{ordenSeleccionada.anio}
                                         </Text>
                                     </View>
 
                                     {/* Horario */}
                                     <View style={styles.detalleSeccionDoble}>
-                                        <View style={styles.detalleColumna}>
+                                        <View style={[styles.detalleColumna, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                             <View style={styles.detalleFila}>
                                                 <Ionicons name="time-outline" size={18} color="#10bfae" />
-                                                <Text style={styles.detalleLabel}>Hora inicio</Text>
+                                                <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Hora inicio</Text>
                                             </View>
-                                            <Text style={styles.detalleValor}>
+                                            <Text style={[styles.detalleValor, { color: theme.textoTitulo }]}>
                                                 {ordenSeleccionada.horaInicio || '—'}
                                             </Text>
                                         </View>
-                                        <View style={styles.detalleColumna}>
+                                        <View style={[styles.detalleColumna, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                             <View style={styles.detalleFila}>
                                                 <Ionicons name="time-outline" size={18} color="#d15b75" />
-                                                <Text style={styles.detalleLabel}>Hora fin</Text>
+                                                <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Hora fin</Text>
                                             </View>
-                                            <Text style={styles.detalleValor}>
+                                            <Text style={[styles.detalleValor, { color: theme.textoTitulo }]}>
                                                 {ordenSeleccionada.horaFin || '—'}
                                             </Text>
                                         </View>
                                     </View>
 
                                     {/* Técnico */}
-                                    <View style={styles.detalleSeccion}>
+                                    <View style={[styles.detalleSeccion, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                         <View style={styles.detalleFila}>
                                             <Ionicons name="person-outline" size={18} color="#10bfae" />
-                                            <Text style={styles.detalleLabel}>Técnico</Text>
+                                            <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Técnico</Text>
                                         </View>
-                                        <Text style={styles.detalleValor}>{ordenSeleccionada.tecnico}</Text>
+                                        <Text style={[styles.detalleValor, { color: theme.textoTitulo }]}>{ordenSeleccionada.tecnico}</Text>
                                     </View>
 
                                     {/* Cliente */}
                                     {ordenSeleccionada.cliente ? (
-                                        <View style={styles.detalleSeccion}>
+                                        <View style={[styles.detalleSeccion, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                             <View style={styles.detalleFila}>
                                                 <Ionicons name="people-outline" size={18} color="#10bfae" />
-                                                <Text style={styles.detalleLabel}>Cliente</Text>
+                                                <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Cliente</Text>
                                             </View>
-                                            <Text style={styles.detalleValor}>{ordenSeleccionada.cliente}</Text>
+                                            <Text style={[styles.detalleValor, { color: theme.textoTitulo }]}>{ordenSeleccionada.cliente}</Text>
                                         </View>
                                     ) : null}
 
                                     {/* Costo */}
                                     {ordenSeleccionada.costo ? (
-                                        <View style={styles.detalleSeccion}>
+                                        <View style={[styles.detalleSeccion, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                             <View style={styles.detalleFila}>
                                                 <Ionicons name="cash-outline" size={18} color="#10bfae" />
-                                                <Text style={styles.detalleLabel}>Costo</Text>
+                                                <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Costo</Text>
                                             </View>
                                             <Text style={styles.detalleValorDestacado}>
                                                 ${ordenSeleccionada.costo}
@@ -426,12 +428,12 @@ const Calendario = () => {
 
                                     {/* Descripción */}
                                     {ordenSeleccionada.descripcion ? (
-                                        <View style={styles.detalleSeccion}>
+                                        <View style={[styles.detalleSeccion, { backgroundColor: theme.fondoSecundario, borderColor: theme.fondoBorde }]}>
                                             <View style={styles.detalleFila}>
                                                 <Ionicons name="reader-outline" size={18} color="#10bfae" />
-                                                <Text style={styles.detalleLabel}>Descripción</Text>
+                                                <Text style={[styles.detalleLabel, { color: theme.textoSubtitulo }]}>Descripción</Text>
                                             </View>
-                                            <Text style={styles.detalleValorDescripcion}>
+                                            <Text style={[styles.detalleValorDescripcion, { color: theme.textoLabel }]}>
                                                 {ordenSeleccionada.descripcion}
                                             </Text>
                                         </View>
@@ -466,21 +468,22 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 1200,
         minHeight: '92%',
-        backgroundColor: '#f7f8fa',
         borderRadius: 10,
         paddingHorizontal: 12,
         paddingTop: 8,
         paddingBottom: 14,
     },
     botonProgramar: {
-        alignSelf: 'flex-start',
+        alignSelf: 'stretch',
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 6,
         backgroundColor: '#10bfae',
-        borderRadius: 8,
+        borderRadius: 10,
         paddingHorizontal: 12,
-        paddingVertical: 10,
+        paddingVertical: 14,
+        marginTop: 16,
         marginBottom: 12,
     },
     textoBotonProgramar: {
