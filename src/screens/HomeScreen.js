@@ -1,66 +1,53 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, SafeAreaView, Platform, StatusBar } from "react-native";
+import { StyleSheet, View, Text, SafeAreaView, TouchableOpacity, StatusBar } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Calendario from "../components/Calendario";
 import { useTheme } from "../constants/ThemeContext";
 import { auth } from "../services/firebaseService";
 
-const HomeScreen = () => {
-    const { theme } = useTheme();
-    const [userName, setUserName] = useState('');
-
-    useEffect(() => {
-        const user = auth.currentUser;
-        if (user) {
-            setUserName(user.displayName || user.email?.split('@')[0] || 'Usuario');
-        }
-    }, []);
-
-    const getCurrentDate = () => {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const date = new Date().toLocaleDateString('es-ES', options);
-        return date.charAt(0).toUpperCase() + date.slice(1);
-    };
+const HomeScreen = ({ navigation }) => {
+    const { theme, isDarkMode } = useTheme();
+    
+    // Obtener información del usuario
+    const user = auth.currentUser;
+    const userName = user?.displayName || user?.email?.split('@')[0] || "Usuario";
+    const initial = userName.charAt(0).toUpperCase();
 
     return (
-        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.fondoApp }]}>
-            <View style={[styles.container, { backgroundColor: theme.fondoApp }]}>
-                {/* Encabezado Superior */}
-                <View style={styles.header}>
-                    <View>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.fondoApp }]}>
+            <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.fondoApp} />
+            
+            <View style={styles.header}>
+                <View style={styles.userInfo}>
+
+                    <View style={styles.greetingContainer}>
                         <Text style={[styles.greeting, { color: theme.textoSubtitulo }]}>
-                            ¡Hola, {userName || 'Usuario'}! 👋
+                            {getGreeting()},
                         </Text>
-                        <Text style={[styles.dateText, { color: theme.textoTitulo }]}>
-                            {getCurrentDate()}
+                        <Text style={[styles.userName, { color: theme.textoTitulo }]} numberOfLines={1}>
+                            {userName}
                         </Text>
                     </View>
-                    <View style={[styles.iconContainer, { backgroundColor: theme.fondoTarjeta, borderColor: theme.fondoBorde, borderWidth: 1 }]}>
-                        <Ionicons name="notifications-outline" size={22} color={theme.acento || "#10bfae"} />
-                        <View style={styles.notificationDot} />
-                    </View>
                 </View>
+                
 
-                {/* Subtítulo o Sección */}
-                <View style={styles.sectionHeader}>
-                    <Text style={[styles.sectionTitle, { color: theme.textoTitulo }]}>Tu Agenda</Text>
-                    <Text style={[styles.sectionSubtitle, { color: theme.textoSubtitulo }]}>Organiza tus órdenes de servicio</Text>
-                </View>
+            </View>
 
-                {/* Calendario */}
-                <View style={styles.calendarContainer}>
-                    <Calendario />
-                </View>
+            <View style={styles.content}>
+                <Calendario />
             </View>
         </SafeAreaView>
     );
 };
 
+// Función para obtener saludo según la hora
+const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Buenos días";
+    if (hour < 18) return "Buenas tardes";
+    return "Buenas noches";
+};
+
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    },
     container: {
         flex: 1,
     },
@@ -70,56 +57,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingTop: 15,
-        paddingBottom: 10,
+        paddingBottom: 5,
+    },
+    userInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        paddingRight: 15,
+    },
+
+    greetingContainer: {
+        flex: 1,
+        justifyContent: 'center',
     },
     greeting: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 4,
+        fontSize: 13,
+        fontWeight: '500',
+        marginBottom: 2,
+        letterSpacing: 0.3,
     },
-    dateText: {
+    userName: {
         fontSize: 20,
-        fontWeight: '800',
+        fontWeight: 'bold',
+        letterSpacing: -0.5,
     },
-    iconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
-        elevation: 2,
-    },
-    notificationDot: {
-        position: 'absolute',
-        top: 10,
-        right: 12,
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#e74c3c',
-        borderWidth: 2,
-        borderColor: '#ffffff',
-    },
-    sectionHeader: {
-        paddingHorizontal: 20,
-        marginTop: 10,
-        marginBottom: 10,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: '800',
-    },
-    sectionSubtitle: {
-        fontSize: 14,
-        marginTop: 4,
-    },
-    calendarContainer: {
+
+    content: {
         flex: 1,
-    },
+    }
 });
 
 export default HomeScreen;
